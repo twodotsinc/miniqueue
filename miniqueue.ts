@@ -62,15 +62,15 @@ function createRLClient() {
         backoffMultiplier: +process.env.MINIQUEUE_BACKOFF_MULTIPLIER || 2,
     })
     const rlClient = new Proxy<InterfaceClient>(client as InterfaceClient, {
-    get(client: InterfaceClient, method: string | symbol) {
-        const value = Reflect.get(client, method, client)
-        if (!method.endsWith('Async')) {
-        return value
-        }
-        return async function () {
-        return await rl.enqueue(method, async () => await value(...arguments))
-        }
-    },
+        get(client: InterfaceClient, method: string | symbol) {
+            const value = Reflect.get(client, method, client)
+            if (!method.endsWith('Async')) {
+                return value
+            }
+            return async function () {
+                return await rl.enqueue(method, async () => await value(...arguments))
+            }
+        },
     })
     return rlClient
 }
